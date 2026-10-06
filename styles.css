@@ -467,12 +467,13 @@ a:focus-visible, button:focus-visible {
 .reveal.in { opacity: 1; transform: none; }
 
 /* ================= RESPONSIVE ================= */
+.lbl-short { display: none; }
+
 @media (max-width: 900px) {
-  .hero__bottom { flex-direction: column; align-items: stretch; }
-  .podium { grid-template-columns: 1fr; max-width: 250px; gap: 22px; }
-  .pod[data-place="1"] { order: -1; }
-  .table__row { grid-template-columns: 56px 1fr 110px; padding: 14px 16px; }
-  .table__row > :nth-child(3) { display: none; }
+  /* tablets are tall and narrow: size the hero to its content, not the screen */
+  .hero { min-height: 0; --F: min(12vw, 104px); --A: min(62vw, 480px); }
+  .hero__inner { padding-top: 120px; }
+  .table__row { grid-template-columns: 52px 1fr auto 96px; padding: 14px 18px; }
 }
 @media (max-width: 720px) {
   .nav__links {
@@ -490,7 +491,8 @@ a:focus-visible, button:focus-visible {
   .nav__toggle { display: flex; }
   .brand__name { display: none; }
   .hero__inner { padding-top: 110px; }
-  .hero { min-height: 0; }
+  .hero__bottom { flex-direction: column; align-items: stretch; }
+  .hero { --F: min(12vw, 56px); }
   .hero__avatar { width: min(86vw, 400px); }
   .hero__rail { margin-top: -70px; }
   .hero__bottom { padding: 18px 0 22px; gap: 12px; }
@@ -500,10 +502,41 @@ a:focus-visible, button:focus-visible {
   .code-pill__code { flex: 1; max-width: 200px; }
   .hero__ctas { width: 100%; }
   .hero__ctas .btn { flex: 1; justify-content: center; }
-  .countdown { gap: 8px; }
-  .countdown__cell { min-width: 0; flex: 1; }
-  .countdown__num { font-size: 30px; }
-  .section { padding: 80px 0; }
+  .countdown { gap: 8px; margin-bottom: 40px; }
+  .countdown__cell { min-width: 0; flex: 1; padding: 12px 4px 10px; }
+  .countdown__num { font-size: 28px; }
+  .countdown__lbl { font-size: 10px; letter-spacing: .12em; }
+  .section { padding: 64px 0; }
+  .section__head { margin-bottom: 32px; }
+  .section__sub { font-size: 15px; }
+
+  /* Podium stays 2nd / 1st / 3rd side by side, just smaller */
+  .podium { gap: 6px; margin-bottom: 28px; }
+  .pod-badge { min-width: 0; width: 70cqi; font-size: 10px; height: 20px; gap: 4px; }
+  .pod-badge svg { width: 10px; }
+  .pod-face { padding: 10cqi 4cqi 9cqi; }
+  .pod-avatar { width: 52cqi; box-shadow: 0 0 0 3px rgba(8, 10, 34, .9), 0 0 18px -4px var(--rank), inset 0 2px 10px rgba(2, 4, 14, .8); border-width: 1.5px; }
+  .pod-name { font-size: clamp(11px, 12cqi, 16px); margin-top: 8cqi; }
+  .pod-metric { font-size: clamp(7px, 6.4cqi, 9px); letter-spacing: .08em; margin-top: 6cqi; }
+  .pod-wagered { font-size: clamp(11px, 11cqi, 15px); white-space: nowrap; }
+  .pod-prize { font-size: clamp(14px, 15cqi, 20px); }
+
+  /* 4th–10th: rank · user · wager · prize, all visible */
+  .table__row { grid-template-columns: 30px minmax(0, 1fr) auto 52px; gap: 10px; padding: 13px 14px; }
+  .table__row--head { font-size: 10px; letter-spacing: .12em; }
+  .lbl-full { display: none; }
+  .lbl-short { display: inline; }
+  .t-rank { width: 30px; height: 30px; border-radius: 8px; font-size: 13px; }
+  .t-user { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .t-wager { font-size: 14px; }
+  .t-prize { font-size: 14px; }
+
+  .weighting { padding: 18px 16px; }
+  .weighting__row { font-size: 14px; }
+
+  .socials { gap: 10px; }
+  .social { padding: 14px; }
+  .social__icon { width: 42px; height: 42px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
