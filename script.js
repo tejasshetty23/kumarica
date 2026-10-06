@@ -51,16 +51,20 @@ function renderLeaderboard(players) {
     .filter(Boolean)
     .map(
       (p) => `
-      <div class="pcol pcol--${p.rank} reveal">
-        <div class="pcol__badge">${trophy}${PLACE[p.rank - 1]} Place</div>
-        <article class="pcard">
-          <div class="pcard__avatar">${p.name[0]}</div>
-          <div class="pcard__name">${p.name}</div>
-          <div class="pcard__wager-lbl">WAGERED</div>
-          <div class="pcard__wager"><span class="sym">$</span>${usd(p.wagered).slice(1)}</div>
-        </article>
-        <div class="pcol__prize">${usd(p.prize, 0)}</div>
-      </div>`
+      <article class="pod reveal" data-place="${p.rank}">
+        <div class="pod-badge">${trophy}${PLACE[p.rank - 1]}</div>
+        <div class="pod-card">
+          <div class="pod-face">
+            <div class="pod-avatar"><span class="pod-avatar-mark" aria-hidden="true"></span></div>
+            <p class="pod-name">${p.name}</p>
+            <p class="pod-metric">Wagered</p>
+            <p class="pod-wagered"><span class="sym">$</span>${usd(p.wagered).slice(1)}</p>
+            <div class="pod-rule"></div>
+            <p class="pod-metric">Prize</p>
+            <p class="pod-prize">${usd(p.prize, 0)}</p>
+          </div>
+        </div>
+      </article>`
     )
     .join("");
   document.getElementById("podium").innerHTML = podium;
