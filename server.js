@@ -2,8 +2,10 @@
  * Kumarica leaderboard server
  * - Serves the static site
  * - GET /api/leaderboard → proxies the Roobet affiliate API (keeps your API key private)
+ *   (the Roobet logic lives in lib/roobet.js; on Vercel, api/leaderboard.js uses it)
  *
- * Run:  node server.js     (Node 18+, no npm install needed)
+ * Run:    node server.js           (Node 18+, no npm install needed)
+ * Check:  node server.js --check   (calls Roobet once and reports what came back)
  * Config lives in .env (copy .env.example → .env)
  */
 const http = require("http");
@@ -20,57 +22,34 @@ if (fs.existsSync(envPath)) {
 }
 
 const PORT = Number(process.env.PORT) || 3000;
-const ROOBET_API_KEY = process.env.ROOBET_API_KEY || "";
-const ROOBET_USER_ID = process.env.ROOBET_USER_ID || "";
-const CACHE_MS = (Number(process.env.CACHE_MINUTES) || 5) * 60 * 1000;
-const TOP_N = 10;
+const { getLeaderboard, cachedLeaderboard, fetchRoobetRows, credentials, mask } = require("./lib/roobet");
 
-// Current month in UTC: [start of month, start of next month)
-function monthRange() {
-  const n = new Date();
-  const start = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), 1));
-  const end = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth() + 1, 1));
-  return { start, end };
-}
-
-// "Kangaroo" -> "Ka***oo"
-function mask(name = "") {
-  if (name.length <= 4) return name[0] + "***";
-  return name.slice(0, 2) + "***" + name.slice(-2);
-}
-
-let cache = { at: 0, data: null };
-
-async function getLeaderboard() {
-  if (cache.data && Date.now() - cache.at < CACHE_MS) return cache.data;
-
-  if (!ROOBET_API_KEY || !ROOBET_USER_ID) {
-    throw new Error("ROOBET_API_KEY / ROOBET_USER_ID not set in .env");
-  }
-
-  const { start, end } = monthRange();
-  const url = new URL("https://roobetconnect.com/affiliate/v2/stats");
-  url.searchParams.set("userId", ROOBET_USER_ID);
-  url.searchParams.set("startDate", start.toISOString());
-  url.searchParams.set("endDate", end.toISOString());
-
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${ROOBET_API_KEY}` } });
-  if (!res.ok) throw new Error(`Roobet API responded ${res.status}`);
-  const raw = await res.json();
-
-  const players = (Array.isArray(raw) ? raw : raw.data || [])
-    .map((p) => ({
-      name: mask(p.username),
-      // Ranked on Roobet's RTP-weighted figure, never the raw stake
-      wagered: Number(p.weightedWagered) || 0,
-    }))
-    .filter((p) => p.wagered > 0)
-    .sort((a, b) => b.wagered - a.wagered)
-    .slice(0, TOP_N);
-
-  const data = { updatedAt: new Date().toISOString(), endsAt: end.toISOString(), players };
-  cache = { at: Date.now(), data };
-  return data;
+// `node server.js --check`: verify the key and the weighted field, then exit.
+if (process.argv.includes("--check")) {
+  (async () => {
+    try {
+      const { rows, range } = await fetchRoobetRows();
+      const { userId, userIdSource } = credentials();
+      console.log(`    user ID: ${userId} (${userIdSource === "env" ? "from .env" : "read from the key"})`);
+      console.log(`OK  key accepted. Range ${range.startDate} → ${range.endDate}, ${rows.length} player row(s).`);
+      if (!rows.length) {
+        console.log("    No wagers under your code in this range yet, so the board will be empty.");
+        return;
+      }
+      const withWeighted = rows.filter((r) => typeof r.weightedWagered === "number").length;
+      console.log(`    weightedWagered present on ${withWeighted}/${rows.length} rows.`);
+      console.log("    Fields on a row:", Object.keys(rows[0]).join(", "));
+      const top = [...rows].sort((a, b) => (b.weightedWagered || 0) - (a.weightedWagered || 0)).slice(0, 5);
+      console.log("    Top 5 by weighted wager (raw wager alongside):");
+      for (const r of top) {
+        console.log(`      ${mask(r.username).padEnd(10)} weighted ${Number(r.weightedWagered || 0).toFixed(2).padStart(12)}   raw ${Number(r.wagered || 0).toFixed(2).padStart(12)}`);
+      }
+    } catch (err) {
+      console.error("FAIL", err.message);
+      process.exitCode = 1;
+    }
+  })();
+  return;
 }
 
 const TYPES = {
@@ -96,9 +75,10 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       console.error("[leaderboard]", err.message);
       // Serve stale data if we have it
-      if (cache.data) {
+      const stale = cachedLeaderboard();
+      if (stale) {
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify(cache.data));
+        return res.end(JSON.stringify(stale));
       }
       res.writeHead(502, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Leaderboard unavailable" }));
