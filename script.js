@@ -43,20 +43,24 @@ function renderLeaderboard(players) {
     .sort((a, b) => b.wagered - a.wagered)
     .map((p, i) => ({ ...p, rank: i + 1, prize: PRIZES[i] ?? 0 }));
 
-  // Podium order: 2nd, 1st, 3rd (rank number + crown are part of the frame art)
+  // Podium order: 2nd, 1st, 3rd
+  const PLACE = ["1st", "2nd", "3rd"];
+  const trophy =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18 2H6v2H2v3a5 5 0 0 0 4.2 4.94A6 6 0 0 0 11 15.9V19H7v3h10v-3h-4v-3.1a6 6 0 0 0 4.8-3.96A5 5 0 0 0 22 7V4h-4V2ZM4 7V6h2v3.83A3 3 0 0 1 4 7Zm16 0a3 3 0 0 1-2 2.83V6h2v1Z"/></svg>';
   const podium = [rows[1], rows[0], rows[2]]
     .filter(Boolean)
     .map(
       (p) => `
-      <article class="pcard pcard--${p.rank} reveal">
-        <div class="pcard__body">
+      <div class="pcol pcol--${p.rank} reveal">
+        <div class="pcol__badge">${trophy}${PLACE[p.rank - 1]} Place</div>
+        <article class="pcard">
           <div class="pcard__avatar">${p.name[0]}</div>
           <div class="pcard__name">${p.name}</div>
-          <div class="pcard__wager-lbl">Wagered</div>
-          <div class="pcard__wager">${usd(p.wagered)}</div>
-          <div class="pcard__prize"><span class="grad-text">${usd(p.prize, 0)}</span></div>
-        </div>
-      </article>`
+          <div class="pcard__wager-lbl">WAGERED</div>
+          <div class="pcard__wager"><span class="sym">$</span>${usd(p.wagered).slice(1)}</div>
+        </article>
+        <div class="pcol__prize">${usd(p.prize, 0)}</div>
+      </div>`
     )
     .join("");
   document.getElementById("podium").innerHTML = podium;

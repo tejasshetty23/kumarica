@@ -235,62 +235,76 @@ a:focus-visible, button:focus-visible {
 }
 .countdown__lbl { display: block; margin-top: 8px; font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 
-/* Podium — framed top 3 */
+/* Podium — top 3 cards */
 .podium {
   display: grid;
-  grid-template-columns: 1fr 1.1fr 1fr;
-  align-items: end;
-  gap: 22px;
-  max-width: 940px;
-  margin: 0 auto 36px;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: 20px;
+  max-width: 860px;
+  margin: 0 auto 40px;
 }
+.pcol { --c: #ffb21a; --c-ink: #2a1600; display: flex; flex-direction: column; align-items: center; }
+.pcol--1 { --c: #ffb21a; --c-ink: #2a1600; }
+.pcol--2 { --c: #c3cbf5; --c-ink: #1a1f45; margin-top: 32px; }
+.pcol--3 { --c: #e0773a; --c-ink: #2a1004; margin-top: 44px; }
+
+.pcol__badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 14px;
+  border-radius: 8px;
+  background: var(--c); color: var(--c-ink);
+  font-size: 13px; font-weight: 800;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.35);
+}
+.pcol__badge svg { width: 14px; height: 14px; }
+
 .pcard {
-  position: relative;
-  aspect-ratio: var(--ratio);
+  position: relative; z-index: 1;
+  width: 100%;
+  margin-top: 10px;
+  padding: 22px 16px 24px;
+  border: 1.5px solid var(--c);
+  border-radius: 14px;
+  background: #141843;
+  overflow: hidden;
   text-align: center;
 }
-/* dark panel, masked to the exact inner shape of each frame */
+/* place-coloured haze rising from the bottom of the card */
 .pcard::before {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, #161a48, #0d1033);
-  -webkit-mask: var(--mask) center / 100% 100% no-repeat;
-  mask: var(--mask) center / 100% 100% no-repeat;
-}
-/* the frame art */
-.pcard::after {
-  content: ""; position: absolute; inset: 0; z-index: 1;
-  background: var(--frame) center / 100% 100% no-repeat;
+  background: radial-gradient(ellipse 90% 70% at 50% 110%, color-mix(in srgb, var(--c) 38%, transparent), transparent 70%);
   pointer-events: none;
 }
-.pcard--1 { --frame: url("assets/frame-1.png"); --mask: url("assets/frame-1-mask.png"); --ratio: 531 / 828; }
-.pcard--2 { --frame: url("assets/frame-2.png"); --mask: url("assets/frame-2-mask.png"); --ratio: 484 / 671; }
-.pcard--3 { --frame: url("assets/frame-3.png"); --mask: url("assets/frame-3-mask.png"); --ratio: 492 / 645; }
+.pcard > * { position: relative; }
 
-.pcard__body {
-  position: absolute; z-index: 2;
-  inset: 28% 13% 9% 13%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4px;
-}
 .pcard__avatar {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 92px; height: 92px; margin: 0 auto;
   display: grid; place-items: center;
-  font-weight: 900; font-size: 20px; color: #1a0d00;
-  background: var(--orange);
-  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #1d2259;
+  outline: 1.5px solid var(--c); outline-offset: 5px;
+  color: var(--c);
+  font-size: 36px; font-weight: 900;
 }
-.pcard--1 .pcard__avatar { width: 54px; height: 54px; font-size: 24px; }
-.pcard__name { font-weight: 800; font-size: 21px; }
-.pcard__wager-lbl { margin-top: 8px; font-size: 12.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
-.pcard__wager { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
-.pcard__prize {
-  display: inline-block; margin-top: 10px;
-  padding: 6px 14px; border-radius: 10px;
-  font-weight: 900; font-size: 26px; letter-spacing: -.01em;
-  background: rgba(255, 138, 0, .1);
-  border: 1px solid rgba(255, 138, 0, .3);
+.pcol--1 .pcard__avatar { width: 104px; height: 104px; font-size: 40px; }
+.pcard__name { margin-top: 18px; font-size: 22px; font-weight: 800; color: #fff; }
+.pcard__wager-lbl { margin-top: 12px; font-size: 12px; font-weight: 700; letter-spacing: .16em; color: var(--c); }
+.pcard__wager { font-size: 22px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.pcard__wager .sym { color: var(--c); }
+
+/* prize bar tucked under the card */
+.pcol__prize {
+  width: 86%;
+  margin-top: -12px; padding: 20px 0 10px;
+  border-radius: 0 0 12px 12px;
+  background: var(--c); color: var(--c-ink);
+  text-align: center;
+  font-size: 24px; font-weight: 900; letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.3);
 }
-.pcard--1 .pcard__prize { font-size: 32px; }
+.pcol--1 .pcol__prize { font-size: 28px; }
 
 /* Table */
 .table {
@@ -372,8 +386,9 @@ a:focus-visible, button:focus-visible {
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
   .hero__bottom { flex-direction: column; align-items: center; }
-  .podium { grid-template-columns: 1fr; max-width: 300px; gap: 28px; }
-  .pcard--1 { order: -1; }
+  .podium { grid-template-columns: 1fr; max-width: 320px; gap: 28px; }
+  .pcol--1 { order: -1; }
+  .pcol--2, .pcol--3 { margin-top: 0; }
   .table__row { grid-template-columns: 56px 1fr 110px; padding: 14px 16px; }
   .table__row > :nth-child(3) { display: none; }
 }
