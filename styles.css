@@ -403,7 +403,27 @@ a:focus-visible, button:focus-visible {
 .t-wager { font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .t-prize { font-weight: 800; font-variant-numeric: tabular-nums; }
 
-.fineprint { margin: 22px auto 0; max-width: 720px; text-align: center; font-size: 13px; color: var(--muted); opacity: .8; }
+/* Weighting disclaimer under the table */
+.weighting {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: var(--radius);
+  background: #141843;
+  border: 1px solid var(--border);
+}
+.weighting__title { font-size: 18px; font-weight: 800; }
+.weighting__text { margin-top: 8px; color: var(--muted); font-size: 14px; max-width: 760px; }
+.weighting__text strong { color: var(--text); }
+.weighting__rows { margin-top: 16px; border-top: 1px solid var(--border); }
+.weighting__row {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px; font-weight: 600;
+}
+.weighting__row small { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.weighting__row b { font-weight: 900; font-size: 18px; color: var(--amber); font-variant-numeric: tabular-nums; }
+.weighting__note { margin-top: 14px; font-size: 13px; color: var(--muted); }
 
 /* Socials */
 .section--socials { border-top: 1px solid var(--border); }
@@ -487,6 +507,7 @@ a:focus-visible, button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }

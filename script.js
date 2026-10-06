@@ -57,7 +57,7 @@ function renderLeaderboard(players) {
           <div class="pod-face">
             <div class="pod-avatar"><span class="pod-avatar-mark" aria-hidden="true"></span></div>
             <p class="pod-name">${p.name}</p>
-            <p class="pod-metric">Wagered</p>
+            <p class="pod-metric">Weighted wager</p>
             <p class="pod-wagered"><span class="sym">$</span>${usd(p.wagered).slice(1)}</p>
             <div class="pod-rule"></div>
             <p class="pod-metric">Prize</p>

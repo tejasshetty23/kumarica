@@ -22,7 +22,6 @@ if (fs.existsSync(envPath)) {
 const PORT = Number(process.env.PORT) || 3000;
 const ROOBET_API_KEY = process.env.ROOBET_API_KEY || "";
 const ROOBET_USER_ID = process.env.ROOBET_USER_ID || "";
-const USE_WEIGHTED = (process.env.USE_WEIGHTED_WAGER || "true") === "true";
 const CACHE_MS = (Number(process.env.CACHE_MINUTES) || 5) * 60 * 1000;
 const TOP_N = 10;
 
@@ -62,7 +61,8 @@ async function getLeaderboard() {
   const players = (Array.isArray(raw) ? raw : raw.data || [])
     .map((p) => ({
       name: mask(p.username),
-      wagered: Number(USE_WEIGHTED ? p.weightedWagered : p.wagered) || 0,
+      // Ranked on Roobet's RTP-weighted figure, never the raw stake
+      wagered: Number(p.weightedWagered) || 0,
     }))
     .filter((p) => p.wagered > 0)
     .sort((a, b) => b.wagered - a.wagered)

@@ -87,13 +87,22 @@
           <div class="table__row table__row--head">
             <span>Place</span>
             <span>User</span>
-            <span class="ta-r">Wagered</span>
+            <span class="ta-r">Weighted wager</span>
             <span class="ta-r">Prize</span>
           </div>
           <div id="tableBody"></div>
         </div>
 
-        <p class="fineprint">Updates every 5 minutes. Only wagers under code KUMARICA count, weighted by game RTP per Roobet's rules. Self-wagering or abuse means disqualification.</p>
+        <div class="weighting" id="weighting">
+          <h3 class="weighting__title">How wagers are weighted</h3>
+          <p class="weighting__text">The board ranks on <strong>weighted wager</strong>, not the raw amount you bet. Roobet counts each wager by the game's RTP, so a game you can cycle at almost no cost doesn't climb the board faster than one you actually risk money on. Your figure here may differ from your Roobet statistics because of this.</p>
+          <div class="weighting__rows">
+            <div class="weighting__row"><span>RTP of 97% or lower <small>Most slots</small></span><b>100%</b></div>
+            <div class="weighting__row"><span>RTP 97.01% – 98.99% <small>Higher-RTP slots and table games</small></span><b>50%</b></div>
+            <div class="weighting__row"><span>RTP of 99% and over <small>Dice and low-edge originals</small></span><b>10%</b></div>
+          </div>
+          <p class="weighting__note">Only wagers under code KUMARICA count. The board updates every 5 minutes. Any abuse or self-wagering found by KUMARICA or Roobet may forfeit your prize.</p>
+        </div>
       </div>
     </section>
 
